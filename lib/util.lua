@@ -1,7 +1,6 @@
 -- https://forum.cockos.com/archive/index.php/t-215860.html
-local result = {}
 
-function result.dump(o)
+local function dump(o)
   if type(o) == 'table' then
     local s = '{ '
     for k, v in pairs(o) do
@@ -14,4 +13,4 @@ function result.dump(o)
   end
 end
 
-return result
+return dump
