@@ -1,4 +1,6 @@
 local key = require("lib/key")
+local dump = require("lib/dump")
+local heroes = require("lib/heroes")
 
 -- 인원수 정하기
 io.write("몇명? ")
@@ -27,22 +29,11 @@ io.write("\n")
 local jobs = { "보안관", "배신자", "무법자", "무법자", "부관", "무법자", "부관", "배신자" }
 local jobsFor3 = { "부관", "배신자", "무법자" }
 
+
 if playerCount == 3 then
   jobs = jobsFor3
 end
 
-local function dump(o)
-  if type(o) == 'table' then
-    local s = '{ '
-    for k, v in pairs(o) do
-      if type(k) ~= 'number' then k = '"' .. k .. '"' end
-      s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-    end
-    return s .. '} '
-  else
-    return tostring(o)
-  end
-end
 
 -- jobs 준비
 print("before ", dump(jobs))
@@ -60,6 +51,7 @@ local function shuffle(tbl)
 end
 
 jobs = shuffle(jobs)
+heroes = shuffle(heroes)
 
 -- 직업 정하기
 io.write("직업을 결정합니다...\n")
@@ -74,6 +66,7 @@ for i, v in pairs(players) do
 
   os.execute("clear")
 end
+
 
 io.write("끝났당")
 
