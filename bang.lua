@@ -50,6 +50,8 @@ heroes = shuffle(heroes)
 
 -- 직업 정하기
 io.write("직업을 결정합니다...\n")
+key.getch()
+
 for i, v in pairs(players) do
   os.execute("clear")
 
