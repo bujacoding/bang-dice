@@ -1,6 +1,9 @@
 local key = require("lib/key")
 local dump = require("lib/dump")
 local heroes = require("lib/heroes")
+local shuffle = require("lib/shuffle")
+local find = require("lib/find")
+local concatTable = require("lib.concatTable")
 
 -- 인원수 정하기
 io.write("몇명? ")
@@ -42,30 +45,52 @@ while playerCount < #jobs do
   print("after ", dump(jobs))
 end
 
-local function shuffle(tbl)
-  for i = #tbl, 2, -1 do
-    local j = math.random(i)
-    tbl[i], tbl[j] = tbl[j], tbl[i]
-  end
-  return tbl
-end
-
 jobs = shuffle(jobs)
 heroes = shuffle(heroes)
 
 -- 직업 정하기
 io.write("직업을 결정합니다...\n")
 for i, v in pairs(players) do
+  os.execute("clear")
+
   io.write(v.name, " 님을 제외한 나머지는 눈을 감아 주세요.\n")
   io.write("준비가 되면 엔터를 눌러 주세요...")
   io.read()
   local job = jobs[i]
+  v.job = job
   io.write("당신의 직업은 [", job, "] 입니다.\n")
   io.write("확인이 끝났으면 엔터를 눌러 주세요...")
   io.read();
 
   os.execute("clear")
 end
+
+-- 보안관이 1번 이 되도록 플레이어 재배치
+-- ex) [무, 보, 배, 무]
+-- 보안관앞의 모든 플레이어들을 맨 뒤로 배치한다.
+
+local startingJob = "보안관"
+if playerCount == 3 then
+  startingJob = "부관"
+end
+
+io.write(startingJob, "부터 시작합니다.\n")
+
+local startingIndex = find(jobs, startingJob)
+
+print("첫 시작 인덱스: ", startingIndex)
+
+if startingIndex ~= 1 then
+  local front = { table.unpack(players, 1, startingIndex - 1) }
+  local back = { table.unpack(players, startingIndex, #players) }
+  players = concatTable(back, front)
+end
+
+print("total: ", #players)
+
+print(dump(players))
+-- 알아야 할 것
+-- 보안관의 인덱스
 
 
 io.write("끝났당")
