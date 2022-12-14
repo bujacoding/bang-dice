@@ -22,6 +22,8 @@ for i = 1, playerCount do
   table.insert(players, player)
 end
 
+
+
 -- 참가자 목록 보여주기
 io.write("\n")
 for i, v in pairs(players) do
@@ -37,7 +39,6 @@ if playerCount == 3 then
   jobs = jobsFor3
 end
 
-
 -- jobs 준비
 print("before ", dump(jobs))
 while playerCount < #jobs do
@@ -52,9 +53,9 @@ heroes = shuffle(heroes)
 io.write("직업을 결정합니다...\n")
 key.getch()
 
+
 for i, v in pairs(players) do
   os.execute("clear")
-
   io.write(v.name, " 님을 제외한 나머지는 눈을 감아 주세요.\n")
   io.write("준비가 되면 엔터를 눌러 주세요...")
   io.read()
@@ -88,12 +89,44 @@ if startingIndex ~= 1 then
   players = concatTable(back, front)
 end
 
-print("total: ", #players)
+-- hero 정하기
+shuffle(heroes)
+for i, player in pairs(players) do 
+  player.hero = heroes[i]
+end
+--플레이어 초기화 하기
+for i, player in pairs(players) do
+  -- player.func = {
+  --   init = function (player)
+  --     player.maxLife = player.hero.life
+  --     if player.job == "보안관" then
+  --       player.maxLife = player.maxLife + 2
+  --     end
+  --     player.life = player.maxLife
+  --   end
+  -- }
+
+  player.init = function (player)
+    player.maxLife = player.hero.life
+    if player.job == "보안관" then
+      player.maxLife = player.maxLife + 2
+    end
+    player.life = player.maxLife
+  end
+
+end
+
+for i, player in pairs(players) do
+  player:init()
+end
 
 print(dump(players))
 -- 알아야 할 것
 -- 보안관의 인덱스
-
+--turn
+repeat
+  
+until 
 
 io.write("끝났당")
 
