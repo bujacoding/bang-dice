@@ -13,7 +13,8 @@ io.write("\n")
 io.write(playerCount, "인용 게임을 시작합니다.\n")
 
 local players = {}
-
+local arrowCount = 9
+local gameOver = false
 -- 이름 정하기
 for i = 1, playerCount do
   io.write(i, "번 이름은? ")
@@ -112,6 +113,7 @@ for i, player in pairs(players) do
       player.maxLife = player.maxLife + 2
     end
     player.life = player.maxLife
+    player.arrowCount = math.random(5)
   end
 
 end
@@ -119,14 +121,38 @@ end
 for i, player in pairs(players) do
   player:init()
 end
-
-print(dump(players))
 -- 알아야 할 것
 -- 보안관의 인덱스
+
+local function emojiWithCount(emoji, count)
+  local result = ""
+    for i = 1, count do
+      result = result..emoji
+    end
+    return result
+end
 --turn
+local turn = 1
 repeat
+  os.execute("clear")
+
+  print("현재 플레이어수:", playerCount)
+  print("플레이어들:")
+  for i, player in pairs(players) do  
+    local myturn = ""
+    if turn == i then
+      myturn = "<<"
+    end
+    print(player.name .. "(" .. player.hero.name .. ")" .. ":" .. emojiWithCount("❤️", player.life) .. emojiWithCount("/", player.arrowCount), myturn)
+    
+  end
+  io.read()
   
-until 
+  turn = turn + 1
+  if turn > playerCount then
+    turn = 1
+  end
+until gameOver
 
 io.write("끝났당")
 
