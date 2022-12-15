@@ -13,7 +13,8 @@ io.write("\n")
 io.write(playerCount, "인용 게임을 시작합니다.\n")
 
 local players = {}
-local arrowCount = 9
+local maxArrowCount = 9
+local arrowCount = maxArrowCount
 local gameOver = false
 -- 이름 정하기
 for i = 1, playerCount do
@@ -113,7 +114,7 @@ for i, player in pairs(players) do
       player.maxLife = player.maxLife + 2
     end
     player.life = player.maxLife
-    player.arrowCount = math.random(5)
+    player.arrowCount = 0
   end
 
 end
@@ -133,32 +134,43 @@ local function emojiWithCount(emoji, count)
 end
 --turn
 local turn = 1
-repeat
-  os.execute("clear")
+local function UpdateArrowCount()
+  local result = 0
+  for i, player in pairs(players) do
+    result = result + player.arrowCount
+  end
+  if maxArrowCount < result then
+    return maxArrowCount
+  end
+  return result
+end
 
+local function UpdateGame()
+  os.execute("clear")
+  arrowCount = maxArrowCount - UpdateArrowCount()
+  print(UpdateArrowCount())
   print("현재 플레이어수:", playerCount)
-  print("플레이어들:")
+  print("인디언 위험도:" .. math.floor((maxArrowCount - arrowCount) / maxArrowCount * 100) .. "%")
+  print("플레이어들: «-=")
+  io.write("\n")
   for i, player in pairs(players) do  
     local myturn = ""
     if turn == i then
       myturn = "<<"
     end
-    print(player.name .. "(" .. player.hero.name .. ")" .. ":" .. emojiWithCount("❤️", player.life) .. emojiWithCount("/", player.arrowCount), myturn)
+    print(player.name .. "(" .. player.hero.name .. ")" .. ":" .. emojiWithCount("❤️", player.life) .."[" ..  player.life .. "]" .. emojiWithCount(" =->", player.arrowCount) .. "[" .. player.arrowCount .. "]", myturn)
     
   end
-  io.read()
   
   turn = turn + 1
   if turn > playerCount then
     turn = 1
   end
+end
+
+repeat
+  UpdateGame()
+  io.read()
 until gameOver
 
 io.write("끝났당")
-
--- io.write("key 1Input: ")
--- -- local r = io.read(1)
--- local r = key.getch()
-
--- io.write('\n')
--- io.write("your input is ", r, "\n")
