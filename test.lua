@@ -1,4 +1,9 @@
 print("TEST")
-for i=10, 1, -1 do
-    print(i)
+local input = io.read()
+if input == nil then
+    print("dd")
 end
+if input == "" then
+    print("haah")
+end
+print(input)

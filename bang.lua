@@ -179,10 +179,24 @@ local diceIcon = { dynamite = "🧨", beer = "🍺", gun = "︻╤──", arrow
 local diceList = { "dynamite", "beer", "gun", "arrow", "bullsEye1", "bullsEye2" }
 
 repeat
+
+  
   local dicePool = {}
   UpdateGame(turn)
 
+  local function dicePrint()
+    print("[" ..
+    diceIcon[dicePool[1]] ..
+    "]" ..
+    "[" ..
+    diceIcon[dicePool[2]] ..
+    "]" ..
+    "[" .. diceIcon[dicePool[3]] .. "]" .. "[" .. diceIcon[dicePool[4]] .. "]" .. "[" .. diceIcon[dicePool[5]] .. "]")
+  end
+
   local function DiceResultExecution()
+   
+
     for i, dice in pairs(dicePool) do
       if dice == "bullsEye2" then
 
@@ -204,22 +218,20 @@ repeat
   end
   UpdateGame(turn)
   print("결과")
-  print("[" ..
-    diceIcon[dicePool[1]] ..
-    "]" ..
-    "[" ..
-    diceIcon[dicePool[2]] ..
-    "]" ..
-    "[" .. diceIcon[dicePool[3]] .. "]" .. "[" .. diceIcon[dicePool[4]] .. "]" .. "[" .. diceIcon[dicePool[5]] .. "]")
   io.write("\n")
-  print("다시 던지실려면 숫자키를 입력.")
-  print("결과를 확정 하실려면 엔터.")
-  local input = io.read()
-  local diceturn = 1
+  dicePrint()
 
+  local diceturn = 1
   local dynamite = 0
   repeat
+    
+    io.write("\n")
+    print("다시 던지실려면 숫자키를 입력." .. tostring(3 - diceturn) .. "번 남았습니다.")
+    print("결과를 확정 하실려면 엔터.")
 
+    local input = io.read()
+
+    
     for i, dice in pairs(dicePool) do
       if dice == "arrow" then
         players[turn].arrowCount = players[turn].arrowCount + 1
@@ -231,27 +243,40 @@ repeat
     end
     if dynamite > 2 then
       players[turn].life = players[turn].life - 1
-      print("다이너마이트가 터졌습니다!")
-      print("당신의 피를 1 깍았습니다.")
+      
       break
     end
+    
+    if arrowCount < 1 then
+      
+      for i, player in pairs(players) do
+        player.life = player.life - player.arrowCount
+        player.arrowCount = 0
+      end
+      UpdateGame(turn)
+      dicePrint()
+      print("인디언의 공격도가 100% 됐습니다 곳 인디언이 공격합니다.")
+      print("모든 사람의 HP가 화살토큰의 개수 만큼 깍입니다.")
+      io.read()
+      
+    end
 
-    if input ~= nil then
+    if input ~= "" then
       local newdicePool = {}
       input:gsub(".", function(c) table.insert(newdicePool, c) end)
-      print(dump(newdicePool))
-      io.read()
+      -- print(dump(newdicePool))
+      -- io.read()
       for i = #newdicePool, 1, -1 do
         if dicePool[tonumber(newdicePool[i])] == "dynamite" then
-          print(dicePool[tonumber(newdicePool[i])], tonumber(newdicePool[i]), dump(dicePool))
-          io.read()
+          -- print(dicePool[tonumber(newdicePool[i])], tonumber(newdicePool[i]), dump(dicePool))
+          -- io.read()
           table.remove(newdicePool, i)
         elseif tonumber(newdicePool[i]) > 5 then
           table.remove(newdicePool, i)
         end
       end
-      print(dump(newdicePool))
-      io.read()
+      -- print(dump(newdicePool))
+      -- io.read()
       for i = 1, #newdicePool do
         dicePool[tonumber(newdicePool[i])] = diceList[math.random(1, 6)]
       end
@@ -259,22 +284,29 @@ repeat
       break
     end
 
+
     UpdateGame(turn)
+    dicePrint()
+    
     diceturn = diceturn + 1
   until diceturn > 2
-  print(dynamite, ":dynamite")
   if dynamite > 2 then
-    print("붐")
+    UpdateGame(turn)
+    dicePrint()
+    print("붐!")
+    print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
+    print("당신의 피를 1 깍았습니다.")
+    
   else
-    DiceResultExecution()
-    print("결과 처리")
+    
+      print("결과 처리:")
+      DiceResultExecution()
+
+    
   end
+  print(players[turn].name .. "님 차례는 끝났습니다.")
 
-
-
-
-
-
+  io.read()
   turn = turn + 1
   if turn > playerCount then
     turn = 1
