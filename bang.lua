@@ -4,6 +4,7 @@ local heroes = require("lib/heroes")
 local shuffle = require("lib/shuffle")
 local find = require("lib/find")
 local concatTable = require("lib.concatTable")
+local keys = {right = ".", left = ","}
 require("lib.stringSplit")
 
 -- 인원수 정하기
@@ -54,7 +55,6 @@ heroes = shuffle(heroes)
 
 -- 직업 정하기
 io.write("직업을 결정합니다...\n")
-key.getch()
 
 
 for i, v in pairs(players) do
@@ -195,13 +195,11 @@ repeat
   end
 
   local function DiceResultExecution()
-   
-
     for i, dice in pairs(dicePool) do
       if dice == "bullsEye2" then
-
+        
       elseif dice == "bullsEye1" then
-
+        
       elseif dice == "gun" then
 
       elseif dice == "beer" then
@@ -243,7 +241,6 @@ repeat
     end
     if dynamite > 2 then
       players[turn].life = players[turn].life - 1
-      
       break
     end
     
@@ -298,11 +295,8 @@ repeat
     print("당신의 피를 1 깍았습니다.")
     
   else
-    
-      print("결과 처리:")
+  
       DiceResultExecution()
-
-    
   end
   print(players[turn].name .. "님 차례는 끝났습니다.")
 
