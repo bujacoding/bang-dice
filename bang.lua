@@ -110,6 +110,7 @@ for i, player in pairs(players) do
   -- }
 
   player.init = function(player)
+    player.displayName = player.name .. "(" .. player.hero.name .. ")"
     player.maxLife = player.hero.life
     if player.job == "보안관" then
       player.maxLife = player.maxLife + 2
@@ -148,17 +149,21 @@ local function UpdateArrowCount()
 end
 
 local function renderPlayers(players, turn)
-  for i, player in pairs(players) do
-    local myturn = ""
-    if turn == i then
-      myturn = "<<"
-    end
 
-    local playerText = player.name .. "(" .. player.hero.name .. ")"
+  for i, player in pairs(players) do
+
+    local nameText = player.displayName
+    if turn == i then
+      nameText = " >>> " .. nameText .. " <<< "
+    end
+    print(nameText)
+
     local lifeText = emojiWithCount("🧡", player.life) .. "[" .. player.life .. "]"
     local arrowText = emojiWithCount(" =->", player.arrowCount) .. "[" .. player.arrowCount .. "]"
 
-    print(playerText .. ":" .. lifeText .. arrowText, myturn)
+    print(lifeText .. arrowText)
+    print()
+
   end
 
   io.write("\n")

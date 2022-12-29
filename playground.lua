@@ -16,3 +16,11 @@ local newdicePool = {}
 input:gsub(".", function (c) table.insert(newdicePool, c) end)
 
 print(dump(newdicePool))
+
+print("strlen:"..string.len("323478179873498(엘 그링고)"))
+
+
+print("ㄱ", string.len("ㄱ"))
+print("가", string.len("가"))
+print("한글111", string.len("한글111"))
+print("ab111", string.len("ab111"))
