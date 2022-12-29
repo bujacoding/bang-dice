@@ -154,6 +154,8 @@ local function renderPlayers(players, turn)
     local nameText = player.displayName
     if turn == i then
       nameText = " 🎲 " .. nameText .. " 🎲 "
+    else
+      nameText = "   " .. nameText
     end
     print(nameText)
 
@@ -182,25 +184,41 @@ local function renderGame(turn)
 
 end
 
-local diceIcon = {
-  dynamite = "🧨",
-  beer = "🍺",
-  gun = "︻╤──",
-  arrow = "«-=",
-  bullsEye1 = "🎯1",
-  bullsEye2 = "🎯2",
-  usedarrow = "«-=",
+local dices = {
+  dynamite = {
+    name = "dynamite",
+    icon = "🧨",
+  },
+  beer = {
+    name = "beer",
+    icon = "🍺",
+  },
+  gun = {
+    name = "gun",
+    icon = "︻╤──"
+  },
+  arrow = {
+    name = "arrow",
+    icon = "«-="
+  },
+  bullsEye1 = {
+    name = "bullsEye1",
+    icon = "🎯1"
+  },
+  bullsEye2 = {
+    name = "bullsEye2",
+    icon = "🎯2"
+  },
 }
-
-local diceList = { "dynamite", "beer", "gun", "arrow", "bullsEye1", "bullsEye2" }
+local dicesArray = { dices.dynamite, dices.beer, dices.gun, dices.arrow, dices.bullsEye1, dices.bullsEye2, }
 
 local function renderDices(dicePool)
   print(
-    "[" .. diceIcon[dicePool[1]] .. "]" ..
-    "[" .. diceIcon[dicePool[2]] .. "]" ..
-    "[" .. diceIcon[dicePool[3]] .. "]" ..
-    "[" .. diceIcon[dicePool[4]] .. "]" ..
-    "[" .. diceIcon[dicePool[5]] .. "]"
+    "[" .. dicePool[1].icon .. "]",
+    "[" .. dicePool[2].icon .. "]",
+    "[" .. dicePool[3].icon .. "]",
+    "[" .. dicePool[4].icon .. "]",
+    "[" .. dicePool[5].icon .. "]"
   )
 end
 
@@ -228,7 +246,7 @@ local function runMain()
     print("엔터:")
     io.read()
     for i = 1, 5 do
-      table.insert(dicePool, diceList[math.random(6)])
+      table.insert(dicePool, dicesArray[math.random(6)])
     end
     renderGame(turn)
     print("결과")
@@ -238,18 +256,16 @@ local function runMain()
     local diceturn = 1
     local dynamite = 0
     repeat
+      dynamite = 0
 
       io.write("\n")
       print("다시 던지실려면 숫자키를 입력." .. tostring(3 - diceturn) .. "번 남았습니다.")
       print("결과를 확정 하실려면 엔터.")
 
       local input = io.read()
-
       for i, dice in pairs(dicePool) do
         if dice == "arrow" then
           players[turn].arrowCount = players[turn].arrowCount + 1
-          dicePool[i] = "usedarrow"
-          renderGame(turn)
         elseif dice == "dynamite" then
           dynamite = dynamite + 1
         end
@@ -274,23 +290,23 @@ local function runMain()
       end
 
       if input ~= "" then
-        local newdicePool = {}
-        input:gsub(".", function(c) table.insert(newdicePool, c) end)
+        local reThrowDices = {}
+        input:gsub(".", function(number) table.insert(reThrowDices, number) end)
         -- print(dump(newdicePool))
         -- io.read()
-        for i = #newdicePool, 1, -1 do
-          if dicePool[tonumber(newdicePool[i])] == "dynamite" then
+        for i = #reThrowDices, 1, -1 do
+          if dicePool[tonumber(reThrowDices[i])] == dices.dynamite then
             -- print(dicePool[tonumber(newdicePool[i])], tonumber(newdicePool[i]), dump(dicePool))
             -- io.read()
-            table.remove(newdicePool, i)
-          elseif tonumber(newdicePool[i]) > 5 then
-            table.remove(newdicePool, i)
+            table.remove(reThrowDices, i)
+          elseif tonumber(reThrowDices[i]) > 5 then
+            table.remove(reThrowDices, i)
           end
         end
         -- print(dump(newdicePool))
         -- io.read()
-        for i = 1, #newdicePool do
-          dicePool[tonumber(newdicePool[i])] = diceList[math.random(1, 6)]
+        for i = 1, #reThrowDices do
+          dicePool[tonumber(reThrowDices[i])] = dices[math.random(1, 6)]
         end
       else
         break
