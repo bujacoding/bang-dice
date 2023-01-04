@@ -184,7 +184,7 @@ local function renderGameStatus(turn)
 
 end
 
-local dices = {
+local Dice = {
   dynamite = {
     name = "dynamite",
     icon = "🧨",
@@ -210,11 +210,11 @@ local dices = {
     icon = "🎯2"
   },
 }
-local dicesArray = { dices.dynamite, dices.beer, dices.gun, dices.arrow, dices.bullsEye1, dices.bullsEye2, }
+local diceTypes = { Dice.dynamite, Dice.beer, Dice.gun, Dice.arrow, Dice.bullsEye1, Dice.bullsEye2, }
 
 local function renderDices(dicePool)
   if dicePool == nil then
-    print("dicePool is nil")
+    error("dicePool is nil")
   end
   
   print(
@@ -251,8 +251,10 @@ local function runMain()
     print("주사위를 던져주세요")
     print("엔터:")
     io.read()
+
+    -- 전체 던지기
     for i = 1, 5 do
-      table.insert(dicePool, dicesArray[math.random(6)])
+      table.insert(dicePool, diceTypes[math.random(6)])
     end
 
     -- 주사위 던진 결과
@@ -273,6 +275,8 @@ local function runMain()
       print("결과를 확정 하실려면 엔터.")
 
       local input = io.read()
+
+      -- dicePool 에서 
       for i, dice in pairs(dicePool) do
         if dice == "arrow" then
           players[turn].arrowCount = players[turn].arrowCount + 1
@@ -286,7 +290,7 @@ local function runMain()
         break
       end
 
-      if getArrowCountRemaining() < 1 then
+      if getArrowCountRemaining() <= 0 then
 
         for i, player in pairs(players) do
           player.life = player.life - player.arrowCount
@@ -306,7 +310,7 @@ local function runMain()
         -- print(dump(newdicePool))
         -- io.read()
         for i = #reThrowDices, 1, -1 do
-          if dicePool[tonumber(reThrowDices[i])] == dices.dynamite then
+          if dicePool[tonumber(reThrowDices[i])] == Dice.dynamite then
             -- print(dicePool[tonumber(newdicePool[i])], tonumber(newdicePool[i]), dump(dicePool))
             -- io.read()
             table.remove(reThrowDices, i)
@@ -317,7 +321,7 @@ local function runMain()
         -- print(dump(newdicePool))
         -- io.read()
         for i = 1, #reThrowDices do
-          dicePool[tonumber(reThrowDices[i])] = dices[math.random(1, 6)]
+          dicePool[tonumber(reThrowDices[i])] = Dice[math.random(1, 6)]
         end
       else
         break
