@@ -170,7 +170,7 @@ local function renderPlayers(players, turn)
   io.write("\n")
 end
 
-local function renderGame(turn)
+local function renderGameStatus(turn)
 
   os.execute("clear")
 
@@ -213,6 +213,10 @@ local dices = {
 local dicesArray = { dices.dynamite, dices.beer, dices.gun, dices.arrow, dices.bullsEye1, dices.bullsEye2, }
 
 local function renderDices(dicePool)
+  if dicePool == nil then
+    print("dicePool is nil")
+  end
+  
   print(
     "[" .. dicePool[1].icon .. "]",
     "[" .. dicePool[2].icon .. "]",
@@ -240,7 +244,9 @@ local function runMain()
 
   repeat
     local dicePool = {}
-    renderGame(turn)
+    -- 초반 안내
+    renderGameStatus(turn)
+
 
     print("주사위를 던져주세요")
     print("엔터:")
@@ -248,11 +254,15 @@ local function runMain()
     for i = 1, 5 do
       table.insert(dicePool, dicesArray[math.random(6)])
     end
-    renderGame(turn)
+
+    -- 주사위 던진 결과
+    renderGameStatus(turn)
     print("결과")
     io.write("\n")
     renderDices(dicePool)
 
+
+    -- 주사위 다시 던지기
     local diceturn = 1
     local dynamite = 0
     repeat
@@ -270,7 +280,8 @@ local function runMain()
           dynamite = dynamite + 1
         end
       end
-      if dynamite > 2 then
+
+      if 3 <= dynamite then
         players[turn].life = players[turn].life - 1
         break
       end
@@ -281,7 +292,7 @@ local function runMain()
           player.life = player.life - player.arrowCount
           player.arrowCount = 0
         end
-        renderGame(turn)
+        renderGameStatus(turn)
         renderDices(dicePool)
         print("인디언의 공격도가 100% 됐습니다 곳 인디언이 공격합니다.")
         print("모든 사람의 HP가 화살토큰의 개수 만큼 깍입니다.")
@@ -313,29 +324,34 @@ local function runMain()
       end
 
 
-      renderGame(turn)
+      renderGameStatus(turn)
       renderDices(dicePool)
 
       diceturn = diceturn + 1
-    until diceturn > 2
-    if dynamite > 2 then
-      renderGame(turn)
+    until 2 < diceturn -- 최대 3번 던질 기회
+
+
+    -- 다이너마이트 작동 처리
+    if 3 <= dynamite then
+      renderGameStatus(turn)
       renderDices(dicePool)
       print("붐!")
       print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
       print("당신의 피를 1 깍았습니다.")
-
     else
-
       runDicesResult(dicePool)
     end
+
     print(players[turn].name .. "님 차례는 끝났습니다.")
 
     io.read()
+
+    -- 다음 턴으로 넘기기
     turn = turn + 1
-    if turn > playerCount then
+    if playerCount < turn then
       turn = 1
     end
+
   until gameOver
 
 end
