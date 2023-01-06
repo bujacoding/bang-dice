@@ -221,6 +221,7 @@ local function renderDices(dicePool)
     "[" .. dicePool[4].icon .. "]",
     "[" .. dicePool[5].icon .. "]"
   )
+  print("(1)", "(2)", "(3)", "(4)", "(5)")
 end
 
 local function runDicesResult(dicePool)
