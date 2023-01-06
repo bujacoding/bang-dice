@@ -322,7 +322,7 @@ local function runMain()
         -- print(dump(newdicePool))
         -- io.read()
         for i = 1, #reThrowDices do
-          dicePool[tonumber(reThrowDices[i])] = Dice[math.random(1, 6)]
+          dicePool[tonumber(reThrowDices[i])] = diceTypes[math.random(1, 6)]
         end
       else
         break
