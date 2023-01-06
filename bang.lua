@@ -214,10 +214,6 @@ local Dice = {
 local diceTypes = { Dice.dynamite, Dice.beer, Dice.gun, Dice.arrow, Dice.bullsEye1, Dice.bullsEye2, }
 
 local function renderDices(dicePool)
-  if dicePool == nil then
-    error("dicePool is nil")
-  end
-  
   print(
     "[" .. dicePool[1].icon .. "]",
     "[" .. dicePool[2].icon .. "]",
@@ -241,10 +237,30 @@ local function runDicesResult(dicePool)
   end
 end
 
+local function dynamiteCheck(dicePool)
+  local dynamite = 0
+  for i, dice in pairs(dicePool) do
+    if dice.name == Dice.dynamite.name then
+      dynamite = dynamite + 1
+    end
+  end
+
+  return dynamite >= 3
+end
+
+local function checkArrowCount(dicePool)
+  for i, dice in pairs(dicePool) do
+    if dice.name == Dice.arrow.name then
+      players[turn].arrowCount = players[turn].arrowCount + 1
+    end
+  end
+end
+
 local function runMain()
 
   repeat
     local dicePool = {}
+    local dynamiteBoom = false
     -- 초반 안내
     renderGameStatus(turn)
 
@@ -265,34 +281,20 @@ local function runMain()
     renderDices(dicePool)
 
 
+
     -- 주사위 다시 던지기
     local diceturn = 1
-    local dynamite = 0
-    repeat
-      dynamite = 0
 
+    repeat
       io.write("\n")
       print("다시 던지실려면 숫자키를 입력." .. tostring(3 - diceturn) .. "번 남았습니다.")
       print("결과를 확정 하실려면 엔터.")
 
       local input = io.read()
 
-      -- dicePool 에서 
-      for i, dice in pairs(dicePool) do
-        if dice == "arrow" then
-          players[turn].arrowCount = players[turn].arrowCount + 1
-        elseif dice == "dynamite" then
-          dynamite = dynamite + 1
-        end
-      end
-
-      if 3 <= dynamite then
-        players[turn].life = players[turn].life - 1
-        break
-      end
+      -- dicePool 에서
 
       if getArrowCountRemaining() <= 0 then
-
         for i, player in pairs(players) do
           player.life = player.life - player.arrowCount
           player.arrowCount = 0
@@ -308,6 +310,7 @@ local function runMain()
       if input ~= "" then
         local reThrowDices = {}
         input:gsub(".", function(number) table.insert(reThrowDices, number) end)
+        print(dump(reThrowDices))
         -- print(dump(newdicePool))
         -- io.read()
         for i = #reThrowDices, 1, -1 do
@@ -327,8 +330,10 @@ local function runMain()
       else
         break
       end
-
-
+      dynamiteBoom = dynamiteCheck(dicePool)
+      if dynamiteBoom == true then
+        print("boom")
+      end
       renderGameStatus(turn)
       renderDices(dicePool)
 
@@ -337,7 +342,7 @@ local function runMain()
 
 
     -- 다이너마이트 작동 처리
-    if 3 <= dynamite then
+    if dynamiteBoom then
       renderGameStatus(turn)
       renderDices(dicePool)
       print("붐!")
