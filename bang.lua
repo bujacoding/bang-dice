@@ -4,6 +4,7 @@ local heroes = require("lib/heroes")
 local shuffle = require("lib/shuffle")
 local find = require("lib/find")
 local concatTable = require("lib.concatTable")
+local console = require("lib/console")
 local keys = { right = ".", left = "," }
 require("lib.stringSplit")
 
@@ -57,7 +58,7 @@ io.write("직업을 결정합니다...\n")
 
 
 for i, v in pairs(players) do
-  os.execute("clear")
+  console.clear()
   io.write(v.name, " 님을 제외한 나머지는 눈을 감아 주세요.\n")
   io.write("준비가 되면 엔터를 눌러 주세요...")
   io.read()
@@ -67,7 +68,7 @@ for i, v in pairs(players) do
   io.write("확인이 끝났으면 엔터를 눌러 주세요...")
   io.read();
 
-  os.execute("clear")
+  console.clear()
 end
 
 -- 보안관이 1번 이 되도록 플레이어 재배치
@@ -172,7 +173,7 @@ end
 
 local function renderGameStatus(turn)
 
-  os.execute("clear")
+  console.clear()
 
   print("현재 플레이어수: " .. playerCount)
   print("인디언 위험도: " .. math.floor(getArrowCountRemaining() / maxArrowCount * 100) .. "%")
