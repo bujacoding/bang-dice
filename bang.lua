@@ -210,8 +210,12 @@ local Dice = {
     name = "bullsEye2",
     icon = "🎯2"
   },
+  usedArrow = {
+    name = "usedArrow",
+    icon = "«-="
+  },
 }
-local diceTypes = { Dice.dynamite, Dice.beer, Dice.gun, Dice.arrow, Dice.bullsEye1, Dice.bullsEye2, }
+local diceTypes = { Dice.dynamite, Dice.beer, Dice.gun, Dice.arrow, Dice.bullsEye1, Dice.bullsEye2, Dice.usedArrow }
 
 local function renderDices(dicePool)
   print(
@@ -253,15 +257,26 @@ local function checkArrowCount(dicePool)
   for i, dice in pairs(dicePool) do
     if dice.name == Dice.arrow.name then
       players[turn].arrowCount = players[turn].arrowCount + 1
+      dicePool[i] = Dice.usedArrow
     end
+  end
+
+  if getArrowCountRemaining() <= 0 then
+    for i, player in pairs(players) do
+      player.life = player.life - player.arrowCount
+      player.arrowCount = 0
+    end
+    renderGameStatus(turn)
+    renderDices(dicePool)
+    print("인디언의 공격도가 100% 됐습니다 곳 인디언이 공격합니다.")
+    print("모든 사람의 HP가 화살토큰의 개수 만큼 깍입니다.")
+    io.read()
   end
 end
 
 local function runMain()
-
   repeat
     local dicePool = {}
-    local dynamiteBoom = false
     -- 초반 안내
     renderGameStatus(turn)
 
@@ -274,39 +289,26 @@ local function runMain()
     for i = 1, 5 do
       table.insert(dicePool, diceTypes[math.random(6)])
     end
-
-    -- 주사위 던진 결과
-    renderGameStatus(turn)
-    print("결과")
-    io.write("\n")
-    renderDices(dicePool)
-
-
-
+    
     -- 주사위 다시 던지기
     local diceturn = 1
-
     repeat
+      -- 주사위 던진 결과
+      renderGameStatus(turn)
+      print("결과")
+      io.write("\n")
+      renderDices(dicePool)
+
       io.write("\n")
       print("다시 던지실려면 숫자키를 입력." .. tostring(3 - diceturn) .. "번 남았습니다.")
       print("결과를 확정 하실려면 엔터.")
+
 
       local input = io.read()
 
       -- dicePool 에서
 
-      if getArrowCountRemaining() <= 0 then
-        for i, player in pairs(players) do
-          player.life = player.life - player.arrowCount
-          player.arrowCount = 0
-        end
-        renderGameStatus(turn)
-        renderDices(dicePool)
-        print("인디언의 공격도가 100% 됐습니다 곳 인디언이 공격합니다.")
-        print("모든 사람의 HP가 화살토큰의 개수 만큼 깍입니다.")
-        io.read()
 
-      end
 
       if input ~= "" then
         local reThrowDices = {}
@@ -331,27 +333,21 @@ local function runMain()
       else
         break
       end
-      dynamiteBoom = dynamiteCheck(dicePool)
-      if dynamiteBoom == true then
-        print("boom")
+      if dynamiteCheck(dicePool) == true then
+        renderGameStatus(turn)
+        renderDices(dicePool)
+        print("붐!")
+        print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
+        print("당신의 피를 1 깍았습니다.")
+        io.read()
       end
-      renderGameStatus(turn)
-      renderDices(dicePool)
 
       diceturn = diceturn + 1
-    until 2 < diceturn -- 최대 3번 던질 기회
-
-
-    -- 다이너마이트 작동 처리
-    if dynamiteBoom then
-      renderGameStatus(turn)
-      renderDices(dicePool)
-      print("붐!")
-      print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
-      print("당신의 피를 1 깍았습니다.")
-    else
-      runDicesResult(dicePool)
-    end
+      -- 다이너마이트 작동 처리 였던거
+      if 3 <= diceturn then
+        runDicesResult(dicePool)
+      end
+    until 3 <= diceturn -- 최대 3번 던질 기회(첮번쨰 던졌던거 까지합해서)
 
     print(players[turn].name .. "님 차례는 끝났습니다.")
 
