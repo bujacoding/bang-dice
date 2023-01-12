@@ -142,10 +142,14 @@ local function getArrowCountRemaining()
   for i, player in pairs(players) do
     consumed = consumed + player.arrowCount
   end
-  if maxArrowCount < consumed then
-    return maxArrowCount
+
+  local result = maxArrowCount - consumed
+
+  if result < 0 then
+    return 0
   end
-  return maxArrowCount - consumed
+
+  return result
 end
 
 local function renderPlayers(players, turn)
@@ -176,7 +180,7 @@ local function renderGameStatus(turn)
   console.clear()
 
   print("현재 플레이어수: " .. playerCount)
-  print("인디언 위험도: " .. math.floor(getArrowCountRemaining() / maxArrowCount * 100) .. "%")
+  print("인디언 위험도: " .. math.floor((maxArrowCount - getArrowCountRemaining()) / maxArrowCount * 100) .. "%")
   io.write("\n")
 
   renderPlayers(players, turn)
@@ -253,7 +257,7 @@ local function dynamiteCheck(dicePool)
   return dynamite >= 3
 end
 
-local function checkArrowCount(dicePool)
+local function updateArrow(dicePool)
   for i, dice in pairs(dicePool) do
     if dice.name == Dice.arrow.name then
       players[turn].arrowCount = players[turn].arrowCount + 1
@@ -339,6 +343,8 @@ local function runMain()
         io.read()
         break
       end
+      
+      updateArrow(dicePool)
 
 
       if diceturn >= 3 then
@@ -364,7 +370,6 @@ local function runMain()
       turn = 1
     end
   until gameOver
-
 end
 
 runMain()
