@@ -232,18 +232,45 @@ local function renderDices(dicePool)
   print("(1)", "(2)", "(3)", "(4)", "(5)")
 end
 
-local function applyDicesResult(dicePool)
+local function getCountOfGuns(dicePool) 
+  local result = 0
+  
   for i, dice in pairs(dicePool) do
-    if dice == "bullsEye2" then
+    if dice == Dice.gun then
+      result = result + 1
+    end
+  end
 
-    elseif dice == "bullsEye1" then
+  return result
+end
 
-    elseif dice == "gun" then
+local function applyDicesResult(dicePool, player)
 
-    elseif dice == "beer" then
+  if 3 <= getCountOfGuns(dicePool) then
+    print('전체 공격 개시')
+    print('나를 제외한 모두가 피해를 입습니다.')
+    io.read()
+  end
+
+  for i, dice in pairs(dicePool) do
+    if dice == Dice.bullsEye2 then
+      print('두방짜리 공격 개시')
+      print('공격 대상 플레이어를 선택하세요.')
+      io.read()
+
+    elseif dice == Dice.bullsEye1 then
+      print('1방짜리 공격 개시')
+      print('공격 대상 플레이어를 선택하세요.')
+      io.read()
+
+    elseif dice == Dice.beer then
+      print('꿀꺽 개시')
+      print('HP 를 채울 플레이어를 선택하세요.', '('..player.name..')')
+      io.read()
 
     end
   end
+
 end
 
 local function dynamiteCheck(dicePool)
@@ -371,7 +398,7 @@ local function runMain()
     local dicePool = throwDicesForPlayer(player)
 
     -- 주사위 결과 반영 (맥주, 공격, 기관총)
-    applyDicesResult(dicePool)
+    applyDicesResult(dicePool, player)
 
     print(player.name .. "님 차례는 끝났습니다.")
 
