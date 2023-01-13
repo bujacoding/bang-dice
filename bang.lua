@@ -232,7 +232,7 @@ local function renderDices(dicePool)
   print("(1)", "(2)", "(3)", "(4)", "(5)")
 end
 
-local function runDicesResult(dicePool)
+local function applyDicesResult(dicePool)
   for i, dice in pairs(dicePool) do
     if dice == "bullsEye2" then
 
@@ -304,9 +304,58 @@ local function reThrowDicesfiltering(input, dicePool)
   return result
 end
 
+local function throwDicesForPlayer()
+  local dicePool = {}
+
+  local diceturn = 1
+  local input = "12345"
+
+  while input ~= "" do
+    -- dicePool 필터링
+    local reThrowDices = reThrowDicesfiltering(input, dicePool)
+    --던지기
+    -- input:gsub(".", function(number) table.insert(reThrowDices, number) end)
+    for i = 1, #reThrowDices do
+      dicePool[tonumber(reThrowDices[i])] = diceTypes[math.random(6)]
+    end
+
+    -- 주사위 던진 결과 출력
+    renderGameStatus(turn)
+    print("결과")
+    io.write("\n")
+    renderDices(dicePool)
+
+    -- 주사위결과 반영
+    if dynamiteCheck(dicePool) == true then
+      renderGameStatus(turn)
+      renderDices(dicePool)
+      print("붐!")
+      print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
+      print("당신의 피를 1 깍았습니다.")
+      io.read()
+      break
+    end
+
+    updateArrow(dicePool)
+
+
+    if diceturn >= 3 then
+      break
+    end
+    -- 던질 주사위 선택
+    io.write("\n")
+    print("다시 던지실려면 숫자키를 입력." .. tostring(3 - diceturn) .. "번 남았습니다.")
+    print("결과를 확정 하실려면 엔터.")
+    input = io.read()
+
+    diceturn = diceturn + 1
+  end
+
+  return dicePool
+end
+
 local function runMain()
   repeat
-    local dicePool = {}
     -- 초반 안내
     renderGameStatus(turn)
 
@@ -314,54 +363,14 @@ local function runMain()
     print("엔터:")
     io.read()
 
+    -- 주사위 던지기
+    local dicePool = throwDicesForPlayer()
 
+    -- 주사위 결과 반영 (맥주, 공격, 기관총)
+    applyDicesResult(dicePool)
 
-    local diceturn = 1
-    local input = "12345"
-    while input ~= "" do
-      -- dicePool 필터링
-      local reThrowDices = reThrowDicesfiltering(input, dicePool)
-      --던지기
-      -- input:gsub(".", function(number) table.insert(reThrowDices, number) end)
-      for i = 1, #reThrowDices do
-        dicePool[tonumber(reThrowDices[i])] = diceTypes[math.random(6)]
-      end
-
-      -- 주사위 던진 결과 출력
-      renderGameStatus(turn)
-      print("결과")
-      io.write("\n")
-      renderDices(dicePool)
-      
-      -- 주사위결과 반영
-      if dynamiteCheck(dicePool) == true then
-        renderGameStatus(turn)
-        renderDices(dicePool)
-        print("붐!")
-        print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
-        print("당신의 피를 1 깍았습니다.")
-        io.read()
-        break
-      end
-      
-      updateArrow(dicePool)
-
-
-      if diceturn >= 3 then
-        break
-      end
-      -- 던질 주사위 선택
-      io.write("\n")
-      print("다시 던지실려면 숫자키를 입력." .. tostring(3 - diceturn) .. "번 남았습니다.")
-      print("결과를 확정 하실려면 엔터.")
-      input = io.read()
-
-      diceturn = diceturn + 1
-    end
-
-    -- 최대 3번 던질 기회(첮번쨰 던졌던거 까지합해서)
-    runDicesResult(dicePool)
     print(players[turn].name .. "님 차례는 끝났습니다.")
+
     io.read()
 
     -- 다음 턴으로 넘기기
