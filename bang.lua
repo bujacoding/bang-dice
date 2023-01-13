@@ -339,8 +339,8 @@ local function throwDicesForPlayer()
     updateArrow(dicePool)
 
 
-    if diceturn >= 3 then
-      break
+    if 3 <= diceturn then
+      return dicePool
     end
     -- 던질 주사위 선택
     io.write("\n")
