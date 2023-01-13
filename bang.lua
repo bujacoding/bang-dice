@@ -397,10 +397,14 @@ local function runMain()
     -- 주사위 던지기
     local dicePool = throwDicesForPlayer(player)
 
+    print(player.name .. "님 주사위 던지기가 끝났습니다.")
+
     -- 주사위 결과 반영 (맥주, 공격, 기관총)
+    print("던진 결과를 반영하겠습니다.")
+    io.read()
     applyDicesResult(dicePool, player)
 
-    print(player.name .. "님 차례는 끝났습니다.")
+    print(player.name .. "님 차례가 끝났습니다.")
 
     io.read()
 
