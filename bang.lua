@@ -185,7 +185,7 @@ local function renderGameStatus(turn)
 
   renderPlayers(players, turn)
 
-  print(players[turn].name .. "님 차례입니다.")
+  -- print(players[turn].name .. "님 차례입니다.")
 
 end
 
@@ -304,11 +304,16 @@ local function reThrowDicesfiltering(input, dicePool)
   return result
 end
 
-local function throwDicesForPlayer()
+local function throwDicesForPlayer(player)
   local dicePool = {}
 
   local diceturn = 1
   local input = "12345"
+
+  print(player.name.."님")
+  print("주사위를 던지려면 엔터를 눌러 주세요.")
+  io.read()
+
 
   while input ~= "" do
     -- dicePool 필터링
@@ -356,20 +361,19 @@ end
 
 local function runMain()
   repeat
+
+    local player = players[turn]
+
     -- 초반 안내
     renderGameStatus(turn)
 
-    print("주사위를 던져주세요")
-    print("엔터:")
-    io.read()
-
     -- 주사위 던지기
-    local dicePool = throwDicesForPlayer()
+    local dicePool = throwDicesForPlayer(player)
 
     -- 주사위 결과 반영 (맥주, 공격, 기관총)
     applyDicesResult(dicePool)
 
-    print(players[turn].name .. "님 차례는 끝났습니다.")
+    print(player.name .. "님 차례는 끝났습니다.")
 
     io.read()
 
