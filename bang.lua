@@ -359,13 +359,16 @@ local function throwDicesForPlayer(player)
 
     -- 주사위결과 반영
     if dynamiteCheck(dicePool) == true then
-      renderGameStatus(turn)
-      renderDices(dicePool)
       print("붐!")
       print("오 이런 다이너 마이트가 3개가 됬군요 다이너마이트가 터졌습니다!")
       print("당신의 피를 1 깍았습니다.")
       io.read()
-      break
+
+      if 0 < player.life then
+        updateArrow(dicePool)
+      end
+
+      return dicePool
     end
 
     updateArrow(dicePool)
